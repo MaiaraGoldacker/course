@@ -8,11 +8,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;
@@ -64,7 +68,11 @@ public class CourseModel implements Serializable {
 	
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY) //Com essa propriedade marcada com WRITE_ONLY, ao consultar esse model, essa Lista será ignorada, ela apenas vai 
 														   //aparecer quando for uma mudança de status, como PUT e POST.
-	@OneToMany(mappedBy = "course")
+	@OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+	@Fetch(FetchMode.SUBSELECT)// esse Fetch Mode define como esse SET fará a busca no BD para trazer os dados de Modules. Caso seja select, vai fazer um select para 
+							   //cada registro. Caso for JOIN, vai fazer inner join, e uma query só, e também vai ignorar o tipo fetch = FetchType.LAZY. Será sempre EAGER.
+							   //caso for subselect, vai fazer os subselects de module dentro do select de course
+							   //DEFAULT: JOIN
 	private Set<ModuleModel> modules; //Hibernate lida melhor com grande volume de dados quando se utiliza set na lista, ao invés de list, 
 									  //pois o Set não vai gerar duplicidade de dados e não é ordenado, diferente do List.
 	
