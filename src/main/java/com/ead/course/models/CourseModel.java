@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -73,6 +74,7 @@ public class CourseModel implements Serializable {
 							   //cada registro. Caso for JOIN, vai fazer inner join, e uma query só, e também vai ignorar o tipo fetch = FetchType.LAZY. Será sempre EAGER.
 							   //caso for subselect, vai fazer os subselects de module dentro do select de course
 							   //DEFAULT: JOIN
+	//@OnDelete(action = OnDeleteAction.CASCADE) //delegando para o banco de dados a responsabilidade de remover -> banco vai gerar uma unica deleção, mas não vai aparecer no sistema o que de fato está sendo removido(Queries)
 	private Set<ModuleModel> modules; //Hibernate lida melhor com grande volume de dados quando se utiliza set na lista, ao invés de list, 
 									  //pois o Set não vai gerar duplicidade de dados e não é ordenado, diferente do List.
 	
