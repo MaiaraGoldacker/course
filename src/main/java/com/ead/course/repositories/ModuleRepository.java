@@ -6,12 +6,12 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import com.ead.course.models.ModuleModel;
 
-public interface ModuleRepository extends JpaRepository<ModuleModel, UUID> {
+public interface ModuleRepository extends JpaRepository<ModuleModel, UUID>, JpaSpecificationExecutor<ModuleModel> {
 
 	@EntityGraph(attributePaths = {"course"}) //atributo anotado com LAZY dentro de Module, não vai carregar quando for chamado, mas para 'alterar' isso em tempo de execução, 
 	ModuleModel findByTitle(String title);	  //podemos utilizar o @EntityGraph que vai carregar o então objeto quando chamado. Como se só nesse determinado momento ele  'se tornasse' EAGER para 
