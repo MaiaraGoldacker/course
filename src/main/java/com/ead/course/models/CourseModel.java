@@ -18,7 +18,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-
 import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -77,5 +76,9 @@ public class CourseModel implements Serializable {
 	//@OnDelete(action = OnDeleteAction.CASCADE) //delegando para o banco de dados a responsabilidade de remover -> banco vai gerar uma unica deleção, mas não vai aparecer no sistema o que de fato está sendo removido(Queries)
 	private Set<ModuleModel> modules; //Hibernate lida melhor com grande volume de dados quando se utiliza set na lista, ao invés de list, 
 									  //pois o Set não vai gerar duplicidade de dados e não é ordenado, diferente do List.
+	
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	@OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+	private Set<CourseUserModel> coursesUsers;
 	
 }
