@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -30,9 +31,12 @@ public class CourseClient {
 	@Autowired
 	UtilsService utilsService;
 	
+	@Value("${ead.api.url.authuser}")
+	String REQUEST_URL_AUTHUSER;
+	
 	public Page<UserDto> getAllUsersByCourse(UUID courseId, Pageable pageable){
 		List<UserDto> searchResult = null;
-		String url = utilsService.createURL(courseId, pageable);
+		String url = REQUEST_URL_AUTHUSER + utilsService.createURLGetAllUsersByCourse(courseId, pageable);
 		log.debug("Request URL {}", url);
 		log.info("Request URL {}", url);
 		try {
