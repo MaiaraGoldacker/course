@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.ead.course.clients.AuthUserClient;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.CourseUserModel;
 import com.ead.course.models.LessonModel;
@@ -37,15 +38,20 @@ public class CourseServiceImpl implements CourseService {
 	@Autowired
 	CourseUserRepository courseUserRepository;
 	
+	@Autowired
+	AuthUserClient authUserClient;
+	
 	@Transactional	
 	@Override
 	public void delete(CourseModel courseModel) {
+		boolean deleteCourseUserInAuthUser = false;
+		
 		List<ModuleModel> moduleModelList = moduleRepository.findAllModulesIntoCourse(courseModel.getCourseId());
 		
 		if (!moduleModelList.isEmpty()) {
 			for (ModuleModel module : moduleModelList) {
 				List<LessonModel> lessonModelList = lessonRepository.findAllLessonsIntoModule(module.getModuleId());
-				if (lessonModelList.isEmpty()) {
+				if (!lessonModelList.isEmpty()) {
 					lessonRepository.deleteAll(lessonModelList);
 				}
 			}	
@@ -56,9 +62,14 @@ public class CourseServiceImpl implements CourseService {
 		List<CourseUserModel>courseUserModelList = courseUserRepository.findAllCourseUserIntoCourse(courseModel.getCourseId());
 		if (!courseUserModelList.isEmpty()) {
 			courseUserRepository.deleteAll(courseUserModelList);
+			deleteCourseUserInAuthUser = true;
 		}
 		
 		courseRepository.delete(courseModel);
+
+		if (deleteCourseUserInAuthUser) {
+			authUserClient.deleteCourseInAuthUser(courseModel.getCourseId());
+		}
 	}
 
 	@Override
