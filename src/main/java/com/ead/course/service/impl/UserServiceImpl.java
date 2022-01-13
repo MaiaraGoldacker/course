@@ -1,5 +1,8 @@
 package com.ead.course.service.impl;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +27,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserModel save(UserModel userModel) {
 		return userRepository.save(userModel);
+	}
+
+	@Override
+	public void delete(UUID userId) {
+		userRepository.deleteById(userId);		
+	}
+
+	@Override
+	public Optional<UserModel> findById(UUID userInstructor) {
+		return userRepository.findById(userInstructor);
 	}
 
 }
