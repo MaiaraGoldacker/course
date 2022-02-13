@@ -2,30 +2,68 @@ server:
   port: 8082
   servlet:
     context-path: '/ead-course/'
+
 spring:
   application:
     name: ead-course-service
+  config:
+    import: 'optional:configserver:'
+  cloud:
+    config:
+      discovery:
+        serviceId: ead-config-server
+      username: configserver
+      password: 'ead123'
   datasource:
-    url: jdbc:postgresql://localhost:5432/ead-course
+    url:  jdbc:postgresql://localhost:5432/ead-course-v2
     username: postgres
     password: Gold#3366
   jpa:
     hibernate:
       ddl-auto: update
       dialect: org.hibernate.dialect.PostgreSQLDialect
-      jdbc: 
-        lob.non-contextual-creation:true
+      jdbc:
+        lob.non-contextual-creation: true
     properties:
       hibernate:
-        show-sql: true
+        show_sql: true
+  output:
+    ansi:
+      enabled: ALWAYS
+  rabbitmq:
+    addresses: amqps://fwivvzvm:OTO_tgdrr0wY0YXUQvY9-bZLBSekc2js@crow.rmq.cloudamqp.com/fwivvzvm
 
 ead:
   api:
     url:
-      authuser: 'http://ead-authuser-service/ead-authuser/'
+      authuser: 'http://ead-authuser-service/ead-authuser'
+  broker:
+    exchange:
+      userEventExchange: ead.userevent
+      notificationCommandExchange: ead.notificationcommand
+    queue:
+      userEventQueue:
+        name: ead.userevent.ms.course
+    key:
+      notificationCommandKey: ms.notification
+  serviceRegistry:
+    username: serviceregistry
+    password: 'ead123' 
+  auth:
+    jwtSecret: p3s6v9y$B?E(H+MbQeThWmZq4t7w!z%C*F)J@NcRfUjXn2r5u8x/A?D(G+KaPdSg
+    jwtExpirationMS: 14400000         
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - refresh
+          - health
+
 eureka:
   client:
-    service-url:
-      defaultZone: 'http://localhost:8761/eureka'
+    serviceUrl:
+      defaultZone: 'http://${ead.serviceRegistry.username}:${ead.serviceRegistry.password}@localhost:8761/eureka'
   instance:
-    hostname: localhost      
+    hostname: localhost
